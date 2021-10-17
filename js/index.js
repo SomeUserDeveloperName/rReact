@@ -1,40 +1,27 @@
 import { Model } from "./model.js";
 import { View } from "./view.js";
-class App {
-  constructor(categories = []){
-      this.model = new Model()
-       this.view = new View() 
+import { Controller } from "./controller.js";
+import * as settings from "./settings.js"
+class App {   
+    constructor(storeId = "", categories = [], iconsCategoriesMap = {}){
+      const instance = this.constructor.instance;
+      if (instance) {
+          return instance;
+      }
+        this.constructor.instance = this;
+        this.model = new Model(storeId, categories)
+        this.view = new View(iconsCategoriesMap) 
+        this.controller = new Controller(this.model, this.view)
+        this.model.controller = this.view.controller = this.controller
+    }
+    init = () => this.controller.buildIndex() 
+}
+  try {
+    const app = new App(settings.storeId, settings.categories, settings.iconsCategoriesMap)
+    app.init(); 
 
-    this.iconMap = {"task": "fab fa-github-square"}
+  } catch (error) {
+     console.log(`Error:`, error.message)
   }
 
-  init = (rootEl) => {
-   //if(window.rWebApp) return this.notesDomApp 
-    const notesObjArr = []  
-    this.rootEl = document.querySelector(rootEl);
 
-      this.rootEl.appendChild(this.view.createTable('notes'))
-     //build notes table
-      //table, thead, row
-     //addbutton
-     this.rootEl.appendChild(this.view.createEl("button","Create note", "", [], []))
-     //summary table
-     this.rootEl.appendChild(this.view.createTable('summary'))
-       //table, thead, row
-
- }
-}
-
-  if(window.rWebApp){ 
-    //console.log(`aaa`, window.rWebApp)
-    //return {}; //
-    window.rWebApp;
-
-  } else {
-    const categories = [];
-    const store = [];
-    const app = new App(categories, store)
-    app.init("rootApp");
-    //console.log('bbb', app)
-    window.rWebApp = app;
-  } 

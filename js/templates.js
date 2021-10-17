@@ -1,5 +1,7 @@
+import * as dateHelper from "./dateHelper.js"
+
 const notesTableHeader = () => {
-    return `<ul>
+    return `<ul class="tableHead">
                 <li>Name</li>
                 <li>Created</li>
                 <li>Category</li>
@@ -13,7 +15,7 @@ const notesTableHeader = () => {
 }
 
 const notesSummaryTableHeader = () => {
-    return  `<ul>
+    return  `<ul class="tableHead">
                 <li>Category</li>
                 <li>Active</li>
                 <li>Archived</li>
@@ -31,7 +33,7 @@ const noteRowTemplate = (row = {}) => {
     return `<ul class="noteRow"> 
                 <li class="noteIcon">${row.icon}</li>
                 <li class="noteName">${row.name}</li>
-                <li>${row.dateCreated}</li>
+                <li>${dateHelper.convertDate(row.dateCreated)}</li>
                 <li>${row.category}</li>
                 <li>${row.content}</li>
                 <li>${row.dateCreated}, ${row.dateEdited}</li>
@@ -42,26 +44,26 @@ const noteRowTemplate = (row = {}) => {
             </ul>`
 } 
 
-const noteRowEditedTemplate = (row = {}, categories = []) => {
+// const noteRowEditedTemplate = (row = {}, categories = []) => {
     
-    return `<ul class="noteRow"> 
-                <li class="noteIcon">${row.icon}</li>
-                <li class="noteName"><input type="text" value="${row.name}"></li>
-                <li>${row.dateCreated}</li>
-                <li><select id="categories" name="categories">
-                        ${noteCategories.forEach(cat =>
-                            `<option value=${cat}>${cat}</option>`
-                        )}
-                    </select>
-                </li>
-                <li><input type="text" value="${row.content}"></li>
-                <li>${row.dateCreated}, ${row.dateEdited}</li>
-                  <ul class="controlButtonsWrap">
-                    <li class="control"><i class="fa fa-floppy-o" aria-hidden="true"></i></li>
-                    <li class="control"><i class="fa fa-archive" aria-hidden="true"></i></li>
-                    <li class="control"><i class="fa fa-trash" aria-hidden="true"></i></li></ul>
-            </ul>`
-} 
+//     return `<ul class="noteRow"> 
+//                 <li class="noteIcon">${row.icon}</li>
+//                 <li class="noteName"><input type="text" value="${row.name}"></li>
+//                 <li>${dateHelper.convertDate(row.dateCreated)}</li>
+//                 <li><select id="categories" name="categories">
+//                         ${noteCategories.forEach(cat =>
+//                             `<option value=${cat}>${cat}</option>`
+//                         )}
+//                     </select>
+//                 </li>
+//                 <li><input type="text" value="${row.content}"></li>
+//                 <li>${row.dateCreated}, ${row.dateEdited}</li>
+//                   <ul class="controlButtonsWrap">
+//                     <li class="control"><i class="fa fa-floppy-o" aria-hidden="true"></i></li>
+//                     <li class="control"><i class="fa fa-archive" aria-hidden="true"></i></li>
+//                     <li class="control"><i class="fa fa-trash" aria-hidden="true"></i></li></ul>
+//             </ul>`
+// } 
 
 const noteRowSummaryTemplate = (row = {}) => {
     return  `<ul class="noteRow"> 
@@ -92,4 +94,4 @@ const addNotePopUp = (noteCategories = []) => {
 
 
 export { noteRowTemplate, noteRowSummaryTemplate, notesTableHeader,
-         notesSummaryTableHeader, notesSummaryTableHeader, addNotePopUp, noRecords }
+         notesSummaryTableHeader, addNotePopUp, noRecords }

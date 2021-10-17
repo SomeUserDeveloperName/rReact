@@ -5,6 +5,9 @@
     width: 35%;
     border-collapse: collapse;
 }
+.popupHidden {
+    display: none
+}
 ul {
     list-style-type: none;
     padding: 0px;

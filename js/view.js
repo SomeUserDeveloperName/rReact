@@ -1,37 +1,55 @@
 import * as templates from "./templates.js"
 export class View {
 
-    constructor(){}
+    constructor(iconsCategoriesMap = {}){
+        this.iconsMap = iconsCategoriesMap
+    }
 
-    createTable = (desc, rows = []) => {
+    createTable = (desc, rows = [], events = []) => {
+
         const tableType = `${desc}Table`;
         const table = this.createEl('section', "", desc, [tableType]) 
         const template = tableType == "notesTable" ? "noteRowTemplate" : "noteRowSummaryTemplate";
 
         let tableHeader = tableType == "notesTable" ? templates.notesTableHeader() 
-                                                      : templates.notesSummaryTableHeader()
+                                                    : templates.notesSummaryTableHeader()
 
-        tableHeader = this.editNode(tableHeader, {"selectorsAdd": ['tableHead']})        
+        tableHeader = this.editNode(tableHeader, {"eventsAdd": events})        
 
                 const rowsElArr = rows.length ? rows.map(row => templates[template](row)) 
                                               : [templates.noRecords()]
 
         let tableRows = this.editNode(rowsElArr.join(''));
-        table.append(tableHeader, tableRows) //innerHTML = `${tableHeader}${rowsElArr.join()}`
+            table.append(tableHeader, tableRows)
         return table        
     }
+    
+    _eventDefault = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+    }
 
+    onClick = (event) => {
+        this._eventDefault(event);
+        console.log(`Event`, event, JSON.stringify(event))
+    }
     clearTable = (desc) => {
         this.getElement(desc).innerHTML = ""
         return true
     }
 
-    editTableRow = (rowNode) => {
-        
+    clearTable = (desc) => {
+
+        Array.from(this.getElement(desc)).children.forEach(el => removeEl(el))
     }
 
-    createNoteAddPopUp = () => {
+    editTableRow = (rowNode) => {
 
+    }
+
+    createNoteAddPopUp = (categories = []) => {
+        return this.editNode(templates.addNotePopUp(categories), 
+                             {"selectorsAdd": [`popupHidden`]});
     }
 
     showNoteAddPopUp = () => {
@@ -90,32 +108,25 @@ export class View {
     return true            
     }
 }
-/*const createRow = (row, id) => {
-    const row = createEl('div', id, [], [], "")
-    const cells = row.map(field => createEl('td', '', [], [], field))
-    cells.map(cell => cell.appendChild(createEl('span', '', [], [])).textContent = )
+    /*const createRow = (row, id) => {
+        const row = createEl('div', id, [], [], "")
+        const cells = row.map(field => createEl('td', '', [], [], field))
+        cells.map(cell => cell.appendChild(createEl('span', '', [], [])).textContent = )
+            noteIcon = `<span class="noteIcon">${iconMap[field.category]}</span>`
+            noteName =`<span class="noteName">${field.name}</span>`
+            noteCreated = `<span>${field.dateCreated}</span>`
+            noteCategory = `<span>${field.category}</span>`
+            noteContent = `<span>${field.content}</span>`
+            noteChangedDate = `<span>${field.dateCreated}, ${field.dateEdited}</span>`;
+            controlButtons = `<div class="controlButtonsWrap">
+                                <span class="control" onClick=(${edit(this, noteId)})>edit</span>
+                                <span class="control" onClick=(${archive(this, noteId)})>archive</span>
+                                <span class="control" onClick=(${remove(this, noteId)})>remove</span></div>`
+        
+        row.append(...cells)
+
         noteIcon = `<span class="noteIcon">${iconMap[field.category]}</span>`
-        noteName =`<span class="noteName">${field.name}</span>`
-        noteCreated = `<span>${field.dateCreated}</span>`
         noteCategory = `<span>${field.category}</span>`
-        noteContent = `<span>${field.content}</span>`
-        noteChangedDate = `<span>${field.dateCreated}, ${field.dateEdited}</span>`;
-        controlButtons = `<div class="controlButtonsWrap">
-                            <span class="control" onClick=(${edit(this, noteId)})>edit</span>
-                            <span class="control" onClick=(${archive(this, noteId)})>archive</span>
-                            <span class="control" onClick=(${remove(this, noteId)})>remove</span></div>`
-     
-    row.append(...cells)
-
-    noteIcon = `<span class="noteIcon">${iconMap[field.category]}</span>`
-    noteCategory = `<span>${field.category}</span>`
-    notesActive = `<span>${field.active}</span>`
-    notesArchived = `<span>${field.archived}</span>`
-}*/
-
-const clearTable = (desc) => {
-
-    Array.from(document.querySelector(`.${desc}`).children)
-         .forEach(el => removeEl(el))
-    //document.querySelector(`.${desc}`).removeChild()
-}
+        notesActive = `<span>${field.active}</span>`
+        notesArchived = `<span>${field.archived}</span>`
+    }*/
