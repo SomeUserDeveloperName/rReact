@@ -1,9 +1,12 @@
-.notesTable {
+.notesTable, .summaryTable {
     color: rgba(0, 0, 0, 0.685);
     border: 2px ;
     height: 100px;
-    width: 35%;
+    width: 50%;
     border-collapse: collapse;
+}
+.controlButtonsWrap li{
+    display: inline-block;
 }
 .popupHidden {
     display: none
@@ -37,13 +40,17 @@ ul {
 .tableHead {
     background-color: rgb(156, 156, 156);
     color: white;
+    display: flex;
+    justify-content: space-between;
 }
-.row {
+.noteRow {
     height: 20px;
     margin: 10px 0px;
     background-color: rgb(230, 230, 230);
+    display: flex;
+    justify-content: space-between;
 }
-.row:hover{
+.noteRow:hover{
     background-color: gray;
 }
 button {

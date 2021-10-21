@@ -8,8 +8,8 @@ const notesTableHeader = () => {
                 <li>Content</li>
                 <li>Dates</li>
                 <li>
-                    <i class="fa fa-archive" aria-hidden="true"></i>
-                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    <i class="fa fa-archive" aria-hidden="true" action="archiveActiveToggle"></i>
+                    <i class="fa fa-trash" aria-hidden="true" action="removeAll"></i>
                 </li>
             </ul>`
 }
@@ -23,7 +23,7 @@ const notesSummaryTableHeader = () => {
 }
 
 const noRecords = () => {
-    return  `<ul class="notesTable">
+    return  `<ul class="noteRow">
                 <li>You haven't any recorded notes</li>
             </ul>`
 }
@@ -31,47 +31,42 @@ const noRecords = () => {
 const noteRowTemplate = (row = {}) => {
     
     return `<ul class="noteRow"> 
-                <li class="noteIcon">${row.icon}</li>
+                <li class="noteIcon">
+                    <i class="${row.icon}" aria-hidden="true"></i>
+                </li>
                 <li class="noteName">${row.name}</li>
                 <li>${dateHelper.convertDate(row.dateCreated)}</li>
                 <li>${row.category}</li>
                 <li>${row.content}</li>
-                <li>${row.dateCreated}, ${row.dateEdited}</li>
-                  <ul class="controlButtonsWrap">
-                    <li class="control"><i class="fa fa-pencil" aria-hidden="true"></i></li>
-                    <li class="control"><i class="fa fa-archive" aria-hidden="true"></i></li>
-                    <li class="control"><i class="fa fa-trash" aria-hidden="true"></i></li></ul>
+                <li>${(() => row.dateEdited ? `${row.dateCreated}, ${row.dateEdited}`
+                                            :    row.dateCreated
+                      )(row)}</li>
+                  <ul class="controlButtonsWrap" rowId="${row.id}">
+                    <li class="control"><i class="fa fa-pencil" aria-hidden="true" action="edit"></i></li>
+                    <li class="control"><i class="fa fa-archive" aria-hidden="true" action="archive"></i></li>
+                    <li class="control"><i class="fa fa-trash" aria-hidden="true" action="remove"></i></li></ul>
             </ul>`
 } 
 
-// const noteRowEditedTemplate = (row = {}, categories = []) => {
-    
-//     return `<ul class="noteRow"> 
-//                 <li class="noteIcon">${row.icon}</li>
-//                 <li class="noteName"><input type="text" value="${row.name}"></li>
-//                 <li>${dateHelper.convertDate(row.dateCreated)}</li>
-//                 <li><select id="categories" name="categories">
-//                         ${noteCategories.forEach(cat =>
-//                             `<option value=${cat}>${cat}</option>`
-//                         )}
-//                     </select>
-//                 </li>
-//                 <li><input type="text" value="${row.content}"></li>
-//                 <li>${row.dateCreated}, ${row.dateEdited}</li>
-//                   <ul class="controlButtonsWrap">
-//                     <li class="control"><i class="fa fa-floppy-o" aria-hidden="true"></i></li>
-//                     <li class="control"><i class="fa fa-archive" aria-hidden="true"></i></li>
-//                     <li class="control"><i class="fa fa-trash" aria-hidden="true"></i></li></ul>
-//             </ul>`
-// } 
-
 const noteRowSummaryTemplate = (row = {}) => {
     return  `<ul class="noteRow"> 
-                <li class="noteIcon">${row.icon}</li>
+                <li class="noteIcon">
+                  <i class="${row.icon}" aria-hidden="true"></i>
+                </li>
                 <li class="noteName">${row.category}</li>
                 <li>${row.active}</li>
                 <li>${row.archived}</li>
             </ul>`
+}
+
+const categoriesSelector = (noteCategories = [], defaultValue = "") =>  {
+
+    return `<select id="categories" name="categories">
+                ${defaultValue ? "" : "<option selected disabled hidden>Choose cat</option>"}                                    
+                ${noteCategories.forEach(cat =>
+                   `<option value=${cat} ${cat === defaulValue ? "selected": ""}>${cat}</option>`
+                )}
+            </select>`
 }
 
 const addNotePopUp = (noteCategories = []) => {
@@ -80,11 +75,7 @@ const addNotePopUp = (noteCategories = []) => {
                      <form>
                      <fieldset>
                         <input type="text" maxlength="50">
-                        <select id="categories" name="categories">
-                            ${noteCategories.forEach(cat =>
-                                `<option value=${cat}>${cat}</option>`
-                                )}
-                        </select>
+                        ${categoriesSelector(noteCategories)}
                         <textarea name="content" rows="1" cols="70"></textarea>
                      </fieldset>
                      <button>Create</button> 
@@ -94,4 +85,4 @@ const addNotePopUp = (noteCategories = []) => {
 
 
 export { noteRowTemplate, noteRowSummaryTemplate, notesTableHeader,
-         notesSummaryTableHeader, addNotePopUp, noRecords }
+         notesSummaryTableHeader, addNotePopUp, categoriesSelector, noRecords }

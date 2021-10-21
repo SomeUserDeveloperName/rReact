@@ -21,7 +21,8 @@ class App {
     app.init(); 
 
   } catch (error) {
-     console.log(`Error:`, error.message)
+      console.log(error)
+      console.error(`Shit happens:`, error.message)
   }
 
 
