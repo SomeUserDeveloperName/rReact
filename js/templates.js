@@ -1,7 +1,6 @@
-import * as dateHelper from "./dateHelper.js"
+import * as dateHelper from './dateHelper.js';
 
-const notesTableHeader = () => {
-    return `<ul class="tableHead">
+const notesTableHeader = () => `<ul class="tableHead">
                 <li>Name</li>
                 <li>Created</li>
                 <li>Category</li>
@@ -11,26 +10,21 @@ const notesTableHeader = () => {
                     <i class="fa fa-archive" aria-hidden="true" action="archiveActiveToggle"></i>
                     <i class="fa fa-trash" aria-hidden="true" action="removeAll"></i>
                 </li>
-            </ul>`
-}
+            </ul>`;
 
-const notesSummaryTableHeader = () => {
-    return  `<ul class="tableHead">
+const createNoteButton = () => `<button action="showPopUp" id="createNoteButton" type="button">Create note</button>`
+
+const notesSummaryTableHeader = () => `<ul class="tableHead">
                 <li>Category</li>
                 <li>Active</li>
                 <li>Archived</li>
-            </ul>`
-}
+            </ul>`;
 
-const noRecords = () => {
-    return  `<ul class="noteRow">
+const noRecords = () => `<ul class="noteRow">
                 <li>You haven't any recorded notes</li>
-            </ul>`
-}
+            </ul>`;
 
-const noteRowTemplate = (row = {}) => {
-    
-    return `<ul class="noteRow"> 
+const noteRowTemplate = (row = {}) => `<ul class="noteRow"> 
                 <li class="noteIcon">
                     <i class="${row.icon}" aria-hidden="true"></i>
                 </li>
@@ -38,51 +32,48 @@ const noteRowTemplate = (row = {}) => {
                 <li>${dateHelper.convertDate(row.dateCreated)}</li>
                 <li>${row.category}</li>
                 <li>${row.content}</li>
-                <li>${(() => row.dateEdited ? `${row.dateCreated}, ${row.dateEdited}`
-                                            :    row.dateCreated
-                      )(row)}</li>
+                <li>${(() => (row.dateEdited ? `${row.dateCreated}, ${row.dateEdited}`
+    : row.dateCreated)
+  )(row)}</li>
                   <ul class="controlButtonsWrap" rowId="${row.id}">
                     <li class="control"><i class="fa fa-pencil" aria-hidden="true" action="edit"></i></li>
                     <li class="control"><i class="fa fa-archive" aria-hidden="true" action="archive"></i></li>
                     <li class="control"><i class="fa fa-trash" aria-hidden="true" action="remove"></i></li></ul>
-            </ul>`
-} 
+            </ul>`;
 
-const noteRowSummaryTemplate = (row = {}) => {
-    return  `<ul class="noteRow"> 
+const noteRowSummaryTemplate = (row = {}) => `<ul class="noteRow"> 
                 <li class="noteIcon">
                   <i class="${row.icon}" aria-hidden="true"></i>
                 </li>
                 <li class="noteName">${row.category}</li>
                 <li>${row.active}</li>
                 <li>${row.archived}</li>
-            </ul>`
-}
+            </ul>`;
 
-const categoriesSelector = (noteCategories = [], defaultValue = "") =>  {
+const categoryIconEl = (classes = []) => `<i class="${classes.join(' ')}" aria-hidden="true"></i>`;
 
-    return `<select id="categories" name="categories">
-                ${defaultValue ? "" : "<option selected disabled hidden>Choose cat</option>"}                                    
-                ${noteCategories.forEach(cat =>
-                   `<option value=${cat} ${cat === defaulValue ? "selected": ""}>${cat}</option>`
-                )}
-            </select>`
-}
+const categoriesSelector = (noteCategories = [], defaultValue = '') =>  
+            `<select id="categories" name="category" action="popUpChangeCategory">
+                ${defaultValue ? '' : '<option selected disabled hidden>Choose cat</option>'}
+                ${noteCategories.map((cat) => `<option value='${cat}' ${cat === defaultValue ? 'selected' : ''}>${cat}</option>`)}
+            </select>`;
 
-const addNotePopUp = (noteCategories = []) => {
-        return `<div class="noteAddPopUp">
-                    <button class="closeButton">X</button>
-                     <form>
-                     <fieldset>
-                        <input type="text" maxlength="50">
-                        ${categoriesSelector(noteCategories)}
-                        <textarea name="content" rows="1" cols="70"></textarea>
-                     </fieldset>
-                     <button>Create</button> 
+const addNotePopUp = (noteCategories = []) => `<div class="noteAddPopUp">
+                    <button class="closeButton" action="closePopUp">X</button>
+                    <form action="addNewNote">
+                      <fieldset>
+                          <span id="popUpAddIcon"></span>
+                          <input type="text" name="name" maxlength="50">
+                          ${categoriesSelector(noteCategories)}
+                          <textarea name="content" rows="1" cols="70"></textarea>
+                      </fieldset>
+                      <button type="submit">Create</button> 
+                      <input type="reset" value="Clear">
                     </form>
-                </div>`
-}
+                </div>`;
 
-
-export { noteRowTemplate, noteRowSummaryTemplate, notesTableHeader,
-         notesSummaryTableHeader, addNotePopUp, categoriesSelector, noRecords }
+export {
+  noteRowTemplate, noteRowSummaryTemplate, notesTableHeader, categoryIconEl,
+  notesSummaryTableHeader, addNotePopUp, categoriesSelector, noRecords,
+  createNoteButton
+};

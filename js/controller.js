@@ -13,11 +13,16 @@ export class Controller {
       const notesRecords = this.model.notesTable()
       const summaryRecords = this.model.summaryTable()
 
+      const popUpEvents =  [{"type": "submit", "listener": this._onSubmit}, 
+                            {"type": "click",  "listener": this._onClick},
+                            {"type": "change", "listener": this._onSelect}]
+      const popUpSelectors = ["popupHidden"]
       const notesTableEvents = [{"type": "click", "listener": this._onClick}]
-       
-      nodes.push(this.view.createNoteAddPopUp())
+      const createNoteButtonEvents = [{"type": "click", "listener": this._onClick}]
+      
+      nodes.push(this.view.createNoteAddPopUp(settings.categories, popUpSelectors, popUpEvents))
       nodes.push(this.view.createTable('notes', notesRecords, notesTableEvents))
-      nodes.push(this.view.createEl("button","Create note", "", [], []))
+      nodes.push(this.view.createButtonCreateNote([], createNoteButtonEvents))
       nodes.push(this.view.createTable('summary', summaryRecords))
       
       this.root.append(...nodes)
@@ -37,16 +42,18 @@ export class Controller {
     }
 
     _onClick = (ev) => {
+    
         const {action, noteId, event} = this._onHandler(ev)
-   
-        const notesActions = {'archiveActiveToggle': this.showHideAllNotesToggle ,
+        console.log(`onclick`, ev, action)
+
+        const notesActions = {'archiveActiveToggle': this.showActiveArchiveNotesToggle ,
                               'removeAll': this.removeAllNotes}
 
         const noteActions = {'remove': this.removeNote, 'onEdit': this.onEditNote, 
                              'editSave': this.editSaveNote,
                              'archive': this.archiveNoteToggle}
 
-        const popupActions = {'addNote': this.addNote, 
+        const popupActions = { 
                               'closePopUp': this.hideCreateNotePopUp,
                               'showPopUp': this.showCreateNotePopUp}                              
 
@@ -63,7 +70,19 @@ export class Controller {
         //console.log(`controller click`, ev.target.attributes.action.nodeValue, ev)
     }
 
+    _onSubmit = (ev = {}) => {
+       
+        const {action, event} = this._onHandler(ev)
+        const submitActions = {'addNewNote': this.addNote}
+
+        if(Object.keys(submitActions).includes(action)){
+
+            submitActions[action](event);
+        }    
+    }
+
     _onSelect = (ev = {}) => {
+        console.log(`change`, ev)
       const {action, noteId, event} = this._onHandler(ev)
 
       const selectActions = {'popUpChangeCategory': this.changeCategoryIconOnAdd,
@@ -72,11 +91,11 @@ export class Controller {
         if(Object.keys(selectActions).includes(action)){
           
             selectActions[action](event, noteId);
-            console.log(`select action`, action, noteActions[action])
+            console.log(`select action`, action, selectActions[action])
         }                             
     }
 
-    showHideAllNotesToggle = () => {
+    showActiveArchiveNotesToggle = () => {
 
         this.model.notesChangeArchiveFlag()
         const newNotes = this.model.notesTable()
@@ -101,8 +120,15 @@ export class Controller {
 
     addNote = (event) => {
 
-        const newNote = {}//event... | name, category, content
-        const newNotes = this.model.addNote(newNote)
+        const newNote = {'name': '', 'category': '', 'content': ''}//event... | name, category, content
+
+        Array.from(event.target).forEach(e => { 
+            if(e.name && Object.keys(newNote).includes(e.name)){ 
+                newNote[e.name] = e.value   
+            }    
+        })
+   
+        const newNotes = this.model.add(newNote)
         const newSummary = this.model.summaryTable()
         this.view.updateNotesTable(newNotes)               
         this.view.updateSummaryTable(newSummary)  
@@ -136,11 +162,42 @@ export class Controller {
         this.view.updateSummaryTable(newSummary)  
     }
 
-    showCreateNotePopUp = () => {}
+    showCreateNotePopUp = (ev = {}) => {
 
-    hideCreateNotePopUp = () => {}
+        this._onHandler(ev)
+        const selectors = {selectorsRemove: ['popupHidden']} 
+        const desc = '.noteAddPopUp'
+        this.view.showNoteAddPopUp(desc, selectors)
+        console.log(`open popup`, ev)
+    }
 
-    changeCategoryIconOnEdit = () => {}
+    hideCreateNotePopUp = (ev = {}) => {
 
-    changeCategoryIconOnAdd = () => {}
+        this._onHandler(ev)
+        const selectors = {selectorsAdd: ['popupHidden']} 
+        const desc = '.noteAddPopUp'
+        this.view.hideNoteAddPopUp(desc, selectors)
+        console.log(`close popup`, ev)
+    }
+
+    changeCategoryIconOnEdit = (event = {}) => {
+
+        this._onHandler(event)
+        const newNote = {'category': ''}//event... | category
+        const {name, value} = event.target;
+        newNote[name] = value 
+   
+        this.view.changeCategoryIconEditNote(event, newNote.category)
+        console.log(`change icon on Edit`, newNote, event)
+    }
+
+    changeCategoryIconOnAdd = (event = {}) => {
+
+        this._onHandler(event)
+        const newNote = {'category': ''}//event... | category
+        const {name, value} = event.target;
+        newNote[name] = value 
+   
+        this.view.changeCategoryIconAddPopUp(event, newNote.category)
+    }
 } 

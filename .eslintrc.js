@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     'airbnb-base',
   ],
+  //  parser: '@babel/eslint-parser',
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -15,5 +16,6 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    'intimplicit-arrow-linebreak': 'none'
   },
 };

@@ -4,6 +4,7 @@ export class View {
 
     constructor(iconsCategoriesMap = {}){
         this.iconsMap = iconsCategoriesMap
+        this.popUpNode = ''
     }
 
     createTable = (desc, rows = [], events = []) => {
@@ -18,7 +19,6 @@ export class View {
         tableHeader = this.editNode(tableHeader)     
 
         const rowsElArr = this.createRows(rows, tableType)
-        console.log(`cre`, rowsElArr)
         //console.log(`edit Note`, rowsElArr.join(''))
         const tableRows = rowsElArr//this.editNode(rowsElArr.join(''))//.replaceAll(/[ \n]/gm, ""));
         //console.log(`table rows`, tableRows)
@@ -34,7 +34,7 @@ export class View {
             return templates[template]({"icon": this.iconsMap[row.category], ...row})}
            ) 
                                       : [templates.noRecords()]
-            console.log(`aa`, rowsElArr)//rowsElArr[0].replaceAll(/>(\n)</gm, ""))                                      
+            //console.log(`aa`, rowsElArr)//rowsElArr[0].replaceAll(/>(\n)</gm, ""))                                      
             const map = rowsElArr.map(el => this.editNode(el))
             console.log(`map`, map)
         return    map
@@ -47,9 +47,8 @@ export class View {
         const selector = `.${settings.notesTableDescriptor} .tableBody`   
         this.clearTable(selector)
             const rowsElArr = this.createRows(rows, settings.notesTableDescriptor)
-            //const tableRows = this.editNode(rowsElArr.join(''));
-            //console.log(`update`, this.getElement(selector))//, settings.notesTableDescriptor)//, ...rowsElArr)
-        (this.getElement(selector)).append(...rowsElArr)//tableRows)
+
+        this.getElement(selector).append(...rowsElArr)
     }
     
     updateSummaryTable = (rows = []) => {
@@ -57,9 +56,8 @@ export class View {
         const selector = `.${settings.summaryTableDescriptor} .tableBody`     
         this.clearTable(selector)
             const rowsElArr = this.createRows(rows, settings.summaryTableDescriptor)
-            //const tableRows = this.editNode(rowsElArr.join(''));
-
-        (this.getElement(selector)).append(...rowsElArr)//tableRows)
+    
+        this.getElement(selector).append(...rowsElArr)
     }
 
     clearTable = (selector) => {
@@ -82,21 +80,65 @@ export class View {
 
     }
 
-    createNoteAddPopUp = (categories = []) => {
-        return this.editNode(templates.addNotePopUp(categories), 
-                             {"selectorsAdd": ["popupHidden"]});
+    createButtonCreateNote = (selectors = [], events = []) => {
+        const button = templates.createNoteButton()
+        return this.editNode(button, {'eventsAdd': events})//this.createEl("button","Create note", "", selectors, events)
     }
 
-    showNoteAddPopUp = () => {
-
+    createNoteAddPopUp = (categories = [], selectors = [], events = []) => {
+        //console.log(`popup`, categories)
+        const popUp = templates.addNotePopUp(categories);
+        const popUpNode = this.editNode(popUp, {'selectorsAdd': selectors, 'eventsAdd': events})
+        const categoryIcon = templates.categoryIconEl()
+        const categoryIconNode = this.editNode(categoryIcon)
+        const categoryIconParentNode = this.getElement('#popUpAddIcon', popUpNode)
+                categoryIconParentNode.appendChild(categoryIconNode)
+        console.log(`popup`, popUpNode, categoryIconNode)
+       // this.popUpNode = popUpNode
+        return popUpNode;
     }
 
-    hideNoteAddPopUp = () => {
+    changeCategoryIconAddPopUp = (node, category) => {
 
+        const newIconClass = this.iconsMap[category];
+        const newIcon = templates.categoryIconEl([newIconClass])
+        const newIconNode = this.editNode(newIcon)
+
+        const popUpIconNode = this.getElement('#popUpAddIcon', node)
+           Array.from(popUpIconNode.children).forEach(child => popUpIconNode.removeChild(child))
+           popUpIconNode.appendChild(newIconNode)
+    }
+
+    changeCategoryIconEditNote = (node, category) => {
+
+        const newIcon = this.iconsMap[category];
+        
+        console.log(`view change`, node, category, newIcon)
+    }
+
+    showNoteAddPopUp = (desc, selectors = {}) => {
+        const node = this.getElement(desc)
+        console.log(`show`, node, selectors)
+        this.editNode(node, selectors)
+
+        const createNoteButton = this.getElement('#createNoteButton')
+        const addAttribute = {'attributesAdd': [{'name': 'disabled', 'value': true}]}
+        console.log(`show`, createNoteButton, addAttribute)
+        this.editNode(createNoteButton, addAttribute, false)
+    }
+
+    hideNoteAddPopUp = (desc, selectors = {}) => {
+        const node = this.getElement(desc)
+        this.editNode(node, selectors)
+
+        const createNoteButton = this.getElement('#createNoteButton')
+        const removeAttribute = {'attributesRemove': [{'name': 'disabled', 'value': false}]}
+        console.log(`hide`, createNoteButton, removeAttribute)
+        this.editNode(createNoteButton, removeAttribute, false)
     }
     
-    getElement = (desc) => {
-        return document.querySelector(desc);
+    getElement = (desc, node = {}) => {
+        return (node instanceof HTMLElement ? node : document).querySelector(desc);
     } 
 
     convertHTMLtoDOM = (str) => {
@@ -107,12 +149,14 @@ export class View {
         return tmp.firstChild.cloneNode(true);
     }
 
-    editNode = (node, options = {}) => {
-       
-        if(node instanceof HTMLElement === false){ 
+    editNode = (nodeDOM, options = {}, clone = true) => {
+
+        let node = nodeDOM
+        if(nodeDOM instanceof HTMLElement === false){ 
      
-            node = this.convertHTMLtoDOM(node)
-        } else {
+            node = this.convertHTMLtoDOM(nodeDOM)
+        } 
+        if(clone){
             node = node.cloneNode(true)
         }   
         //console.log(`node`, node)
@@ -121,10 +165,15 @@ export class View {
             if(options.content) node.textContent = options.content
 
             options.selectorsAdd?.forEach(selector => node.classList.add(selector))
-            options.selectorRemove?.forEach(selector => node.classList.remove(selector))
+            options.selectorsRemove?.forEach(selector => node.classList.remove(selector))
 
             options.eventsAdd?.forEach(ev => node.addEventListener(ev.type, ev.listener))
             options.eventsRemove?.forEach(ev => node.removeEventListener(ev.type, ev.listener))  
+
+            options.attributesAdd?.forEach(attr => { node.setAttribute(attr.name, attr.value)
+                console.log(`edit node set Attr`, node, attr)
+            })
+            options.attributesRemove?.forEach(attr => node.removeAttribute(attr.name, attr.value))
 
         return node    
     }

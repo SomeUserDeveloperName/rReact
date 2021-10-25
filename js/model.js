@@ -1,14 +1,14 @@
-import * as noteSchema from "./schemaHelper.js"
+import {default as noteSchema} from "./schemaHelper.js"
 import * as dateHelper from "./dateHelper.js"
 export class Model {
 
   constructor(storeId = "", notesCategories = []){
 
-    const mockObj = {"notes": [{ "id": 1, "name": "alala", "dateCreated": "30/02/2145", 
+    const mockObj = {"notes": [{ "id": "1", "name": "alala", "dateCreated": "30/02/2145", 
                                 "category": "Task", "content": "some content", 
                                 "dateEdited": "", "archived": false},
-                                { "id": 2, "name": "gfg", "dateCreated": "11/12/2035", 
-                                "category": "Task", "content": "flfklfglkbn", 
+                                { "id": "2", "name": "gfg", "dateCreated": "11/12/2035", 
+                                "category": "Idea", "content": "flfklfglkbn", 
                                 "dateEdited": "", "archived": false}],
                      "showArchivedNotes": false}
 
@@ -27,6 +27,7 @@ export class Model {
   add = (newNote = {}) => {
 
     newNote.dateCreated = dateHelper.getCurrentDate()
+    console.log(`add model`, dateHelper.getCurrentDate(), new Date().getTime())
     newNote.id = `${newNote.dateCreated}_${ new Date().getTime()}`;//Math.floor(Math.random()*99+1)
     newNote.archived = false;
 
@@ -65,16 +66,16 @@ export class Model {
   
   noteToArchive = (noteId) => {
 
-    const newNotes = this.notes.map(note => noteId === note.id, {"archived": true, ...note}) 
+    const newNotes = this.notes.map(note => noteId === note.id ? {...note, ...{"archived": true}} : note) 
     this._saveRecords(newNotes)
-    return newNotes
+    return newNotes.filter(note => note.archived === false)
   }
   
   noteUpFromArchive = (noteId) => {
 
-     const newNotes = this.notes.map(note => noteId === note.id, {"archived": false, ...note}) 
+     const newNotes = this.notes.map(note => noteId === note.id ? {...note, ...{"archived": false}} : note) 
      this._saveRecords(newNotes)
-     return newNotes
+     return newNotes.filter(note => note.archived === true)
   }
 
   noteArchiveToogle = (noteId) => {
