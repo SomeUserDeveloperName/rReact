@@ -1,0 +1,20 @@
+const mockObj = {"notes": 
+                    [{ "id": "1", 
+                        "name": "alala", 
+                        "dateCreated": "30/02/2145", 
+                        "category": "Task", 
+                        "content": "some content", 
+                        "dateEdited": "", 
+                        "archived": false,
+                    },    
+                    {   "id": "2", 
+                        "name": "gfg", 
+                        "dateCreated": "11/12/2035", 
+                        "category": "Idea", 
+                        "content": "flfklfglkbn", 
+                        "dateEdited": "", 
+                        "archived": false,
+                    }],    
+                 "showArchivedNotes": false,
+                }
+export default mockObj

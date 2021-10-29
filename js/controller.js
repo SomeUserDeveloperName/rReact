@@ -46,7 +46,6 @@ export class Controller {
     _onClick = (ev) => {
     
         const {action, noteId, event} = this._onHandler(ev)
-        console.log(`onclick`, ev, action)
 
         const notesActions = {'archiveActiveToggle': this.showActiveArchiveNotesToggle ,
                               'removeAll': this.removeAllNotes}
@@ -64,31 +63,20 @@ export class Controller {
         const clickActions = {...noteActions, ...notesActions, ...popupActions}      
 
         if(Object.keys(clickActions).includes(action)){
-            //this.editNoteFlag + (shopPopUp || notesAction || remove || archive) editSave| oneditcancel
-            //this.createNotePopUpFlag + closePoUp
-            //
+ 
             if((this.createNotePopUpFlag === true && action === 'closePopUp')//block all event in popup background
                || (this.editNoteFlag === true && ['editSave','onEditCancel'].includes(action))
                || (this.editNoteFlag === false && this.createNotePopUpFlag === false)){
-
-
-           /* if((this.createNotePopUpFlag ===  && action === 'closePopUp')//block all event in popup background
-               || (this.editNoteFlag === false 
-                   || ['editSave','onEditCancel'].includes(action))){//allow all or only (save|close) note edit
-             */       
+    
                     clickActions[action](event, noteId);
             }    
-            console.log(`click Action`, action, noteActions[action], this.createNotePopUpFlag)
         }
-        
-        //console.log(`controller click`, ev.target.attributes.action.nodeValue, ev)
     }
 
     _onSubmit = (ev = {}) => {
        
         const {action, event} = this._onHandler(ev)
         const submitActions = {'addNewNote': this.addNote}
-        console.log(`onsubmit`, action)
 
         if(Object.keys(submitActions).includes(action)){
 
@@ -97,7 +85,7 @@ export class Controller {
     }
 
     _onSelect = (ev = {}) => {
-        console.log(`change`, ev)
+ 
       const {action, _, event} = this._onHandler(ev)
       const noteId = event.target?.parentNode?.parentNode?.attributes?.rowid?.nodeValue ?? "" ;
       
@@ -107,15 +95,15 @@ export class Controller {
         if(Object.keys(selectActions).includes(action)){
           
             selectActions[action](event, noteId);
-            console.log(`select action`, action, selectActions[action])
         }                             
     }
 
     showActiveArchiveNotesToggle = () => {
 
-        this.model.notesChangeArchiveFlag()
+        const activeArchiveFlag = this.model.notesChangeArchiveFlag()
         const newNotes = this.model.notesTable()
-        this.view.updateNotesTable(newNotes)                 
+        this.view.updateNotesTable(newNotes)
+        this.view.activeArchiveNotesToggle(activeArchiveFlag)
     }
 
     removeAllNotes = () => {
@@ -144,7 +132,7 @@ export class Controller {
                 newNote[e.name] = e.value   
             }    
         })
-        console.log(`add note controller`)
+
         const newNotes = this.model.add(newNote)
         const newSummary = this.model.summaryTable()
 
@@ -213,7 +201,7 @@ export class Controller {
 
     archiveNoteToggle = (_, noteId) => {
 
-        const newNotes = this.model.noteArchiveToogle(noteId)
+        const newNotes = this.model.noteArchiveToggle(noteId)
         const newSummary = this.model.summaryTable()
         this.view.updateNotesTable(newNotes)               
         this.view.updateSummaryTable(newSummary)  
@@ -226,7 +214,6 @@ export class Controller {
         const desc = '.noteAddPopUp'
         this.view.showNoteAddPopUp(desc, selectors)
         this.createNotePopUpFlag = true
-        console.log(`open popup`, ev)
     }
 
     hideCreateNotePopUp = (ev = {}) => {
@@ -236,7 +223,6 @@ export class Controller {
         const desc = '.noteAddPopUp'
         this.view.hideNoteAddPopUp(desc, selectors)
         this.createNotePopUpFlag = false
-        console.log(`close popup`, ev)
     }
 
     changeCategoryIconOnEdit = (event = {}, noteId) => {

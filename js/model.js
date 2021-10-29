@@ -1,16 +1,9 @@
-import {default as noteSchema} from "./schemaHelper.js"
-import * as dateHelper from "./dateHelper.js"
+import {default as noteSchema} from "./helpers/schemaHelper.js"
+import * as dateHelper from "./helpers/dateHelper.js"
+import {default as mockObj } from "./dataMock.js"
 export class Model {
 
   constructor(storeId = "", notesCategories = []){
-
-    const mockObj = {"notes": [{ "id": "1", "name": "alala", "dateCreated": "30/02/2145", 
-                                "category": "Task", "content": "some content", 
-                                "dateEdited": "", "archived": false},
-                                { "id": "2", "name": "gfg", "dateCreated": "11/12/2035", 
-                                "category": "Idea", "content": "flfklfglkbn", 
-                                "dateEdited": "", "archived": false}],
-                     "showArchivedNotes": false}
 
     this.notesCategories = notesCategories;
     this.storeId = storeId;
@@ -27,8 +20,7 @@ export class Model {
   add = (newNote = {}) => {
 
     newNote.dateCreated = dateHelper.getCurrentDate()
-    console.log(`add model`, dateHelper.getCurrentDate(), new Date().getTime())
-    newNote.id = `${newNote.dateCreated}_${ new Date().getTime()}`;//Math.floor(Math.random()*99+1)
+    newNote.id = `${newNote.dateCreated}_${ new Date().getTime()}`;
     newNote.archived = false;
 
     if(this.noteSchema.check(newNote) === false) throw new Error("Added note doesn't valid to schema")
@@ -81,7 +73,7 @@ export class Model {
      return newNotes.filter(note => note.archived === true)
   }
 
-  noteArchiveToogle = (noteId) => {
+  noteArchiveToggle = (noteId) => {
     
     return this.showArchivedNotes ? this.noteUpFromArchive(noteId)
                                   : this.noteToArchive(noteId)               
@@ -100,7 +92,10 @@ export class Model {
                                   : this.notes.filter(note => !note.archived)
   }
 
-  notesChangeArchiveFlag = () => this._saveRecords(this.notes, !this.showArchivedNotes)
+  notesChangeArchiveFlag = () => {
+    this._saveRecords(this.notes, !this.showArchivedNotes)
+    return this.showArchivedNotes
+  }  
 
   summaryTable = () => {
 
