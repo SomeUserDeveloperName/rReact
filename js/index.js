@@ -3,22 +3,20 @@ import { View } from "./view.js";
 import { Controller } from "./controller.js";
 import * as settings from "./settings.js"
 class App {   
-    constructor(storeId = "", categories = [], iconsCategoriesMap = {}){
+    constructor(settings = {}){
       const instance = this.constructor.instance;
-      if (instance) {
-          return instance;
-      }
+      if (instance) return instance;
+
         this.constructor.instance = this;
-        this.model = new Model(storeId, categories)
-        this.view = new View(iconsCategoriesMap) 
-        this.controller = new Controller(this.model, this.view)
-        this.model.controller = this.view.controller = this.controller
+        this.model = new Model(settings)
+        this.view = new View(settings) 
+        this.controller = new Controller(this.model, this.view, settings)
     }
     init = () => this.controller.buildIndex() 
 }
   try {
-    const app = new App(settings.storeId, settings.categories, settings.iconsCategoriesMap)
-    app.init(); 
+     if(Object.keys(settings).length === 0) throw new Error("Settings obj are empty, but he can't") 
+      new App(settings).init()
 
   } catch (error) {
       console.log(error)

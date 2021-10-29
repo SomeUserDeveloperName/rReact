@@ -84,4 +84,4 @@ const checkA = (noteObj, noteRef = noteRef) => {
   return passedRK.length === reqKeys.length ? ({ ...resObj, ...{ bool: true } }) : resObj;
 };
 
-export default { check, checkA };
+export { check, checkA };

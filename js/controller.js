@@ -1,10 +1,10 @@
-import * as settings from "./settings.js"
-
 export class Controller {
-    constructor(model, view){
+    constructor(model, view, settings = {}){
         this.model = model
         this.view = view
-        this.root = document.querySelector(settings.rootElement);
+        this.settings = settings
+        this.root = this.view.getElement(this.settings.rootElement);
+        this.categories = this.settings.categories || []
         this.editNoteFlag = false
         this.createNotePopUpFlag = false
     }
@@ -22,7 +22,7 @@ export class Controller {
                                 {"type": "click", "listener": this._onClick}]
       const createNoteButtonEvents = [{"type": "click", "listener": this._onClick}]
       
-      nodes.push(this.view.createNoteAddPopUp(settings.categories, popUpSelectors, popUpEvents))
+      nodes.push(this.view.createNoteAddPopUp(this.categories, popUpSelectors, popUpEvents))
       nodes.push(this.view.createTable('notes', notesRecords, notesTableEvents))
       nodes.push(this.view.createButtonCreateNote([], createNoteButtonEvents))
       nodes.push(this.view.createTable('summary', summaryRecords))
@@ -64,7 +64,7 @@ export class Controller {
 
         if(Object.keys(clickActions).includes(action)){
  
-            if((this.createNotePopUpFlag === true && action === 'closePopUp')//block all event in popup background
+            if((this.createNotePopUpFlag === true && action === 'closePopUp')
                || (this.editNoteFlag === true && ['editSave','onEditCancel'].includes(action))
                || (this.editNoteFlag === false && this.createNotePopUpFlag === false)){
     
@@ -148,7 +148,7 @@ export class Controller {
       
         if(note.id){ 
           this.editNoteFlag = true
-          this.view.editTableRow(note, settings.categories)
+          this.view.editTableRow(note, this.categories)
         }     
     }
 

@@ -1,9 +1,9 @@
 import * as templates from "./templates/templates.js"
-import * as settings from "./settings.js"
 export class View {
 
-    constructor(iconsCategoriesMap = {}){
-        this.iconsMap = iconsCategoriesMap
+    constructor(settings = {}){
+        this.settings = settings
+        this.iconsMap = this.settings.iconsCategoriesMap || {}
     }
 
     createTable = (desc, rows = [], events = []) => {
@@ -40,18 +40,18 @@ export class View {
 
     updateNotesTable = (rows = []) => {
 
-        const selector = `.${settings.notesTableDescriptor} .tableBody`   
+        const selector = `.${this.settings.notesTableDescriptor} .tableBody`   
         this.clearTable(selector)
-            const rowsElArr = this.createRows(rows, settings.notesTableDescriptor)
+            const rowsElArr = this.createRows(rows, this.settings.notesTableDescriptor)
 
         this.getElement(selector).append(...rowsElArr)
     }
     
     updateSummaryTable = (rows = []) => {
 
-        const selector = `.${settings.summaryTableDescriptor} .tableBody`     
+        const selector = `.${this.settings.summaryTableDescriptor} .tableBody`     
         this.clearTable(selector)
-            const rowsElArr = this.createRows(rows, settings.summaryTableDescriptor)
+            const rowsElArr = this.createRows(rows, this.settings.summaryTableDescriptor)
     
         this.getElement(selector).append(...rowsElArr)
     }

@@ -1,12 +1,13 @@
-import {default as noteSchema} from "./helpers/schemaHelper.js"
+import * as noteSchema from "./helpers/schemaHelper.js"
 import * as dateHelper from "./helpers/dateHelper.js"
-import {default as mockObj } from "./dataMock.js"
+import * as mockObj  from "./dataMock.js"
 export class Model {
 
-  constructor(storeId = "", notesCategories = []){
+  constructor(settings = {}){
 
-    this.notesCategories = notesCategories;
-    this.storeId = storeId;
+    this.settings = settings
+    this.notesCategories = this.settings.notesCategories || [];
+    this.storeId = this.settings.storeId || "";
     this.store = JSON.parse(localStorage.getItem(this.storeId)) || mockObj;
     this.notes = this.store.notes || [];
     this.showArchivedNotes = this.store.showArchivedNotes

@@ -17,4 +17,4 @@ const mockObj = {"notes":
                     }],    
                  "showArchivedNotes": false,
                 }
-export default mockObj
+export { mockObj }
