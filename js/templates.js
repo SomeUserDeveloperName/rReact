@@ -6,40 +6,53 @@ const notesTableHeader = () => `<ul class="tableHead">
                 <li>Category</li>
                 <li>Content</li>
                 <li>Dates</li>
-                <li>
-                    <i class="fa fa-archive" aria-hidden="true" action="archiveActiveToggle"></i>
-                    <i class="fa fa-trash" aria-hidden="true" action="removeAll"></i>
+                <li><ul name="headerNoteControls">
+                      <li name="archiveToggle"><i class="fa fa-archive" action="archiveActiveToggle" data-tooltip="To archived notes" aria-hidden="true"></i></li>
+                      <li name="removeAllNotes"><i class="fa fa-trash" action="removeAll" data-tooltip="Remove all" aria-hidden="true"></i></li>
+                    </ul>
                 </li>
             </ul>`;
 
 const createNoteButton = () => `<button action="showPopUp" id="createNoteButton" type="button">Create note</button>`
+const hideNotePopUpButton = () => `<button class="closeButton" action="closePopUp">X</button>`
+
+const icon = (selector) => `<i class="${selector}" aria-hidden="true"></i>`
 
 const notesSummaryTableHeader = () => `<ul class="tableHead">
-                <li>Category</li>
-                <li>Active</li>
-                <li>Archived</li>
-            </ul>`;
+                                          <li>Category</li>
+                                          <li>Active</li>
+                                          <li>Archived</li>
+                                      </ul>`;
 
 const noRecords = () => `<ul class="noteRow">
-                <li>You haven't any recorded notes</li>
-            </ul>`;
+                            <li>You haven't any recorded notes</li>
+                        </ul>`;
 
-const noteRowTemplate = (row = {}) => `<ul class="noteRow"> 
-                <li class="noteIcon">
+const noteRowTemplate = (row = {}) => `<ul class="noteRow" rowId="${row.id}"> 
+                <li name="noteIcon">
                     <i class="${row.icon}" aria-hidden="true"></i>
                 </li>
-                <li class="noteName">${row.name}</li>
+                <li name="noteName">${row.name}</li>
                 <li>${dateHelper.convertDate(row.dateCreated)}</li>
-                <li>${row.category}</li>
-                <li>${row.content}</li>
+                <li name="noteCategory">${row.category}</li>
+                <li name="noteContent">${row.content}</li>
                 <li>${(() => (row.dateEdited ? `${row.dateCreated}, ${row.dateEdited}`
     : row.dateCreated)
   )(row)}</li>
-                  <ul class="controlButtonsWrap" rowId="${row.id}">
-                    <li class="control"><i class="fa fa-pencil" aria-hidden="true" action="edit"></i></li>
-                    <li class="control"><i class="fa fa-archive" aria-hidden="true" action="archive"></i></li>
-                    <li class="control"><i class="fa fa-trash" aria-hidden="true" action="remove"></i></li></ul>
+                <li name="noteControls">
+                  <ul class="controlButtonsWrap" >
+                    <li name="editNoteControl"><i class="fa fa-pencil" action="onEdit" data-tooltip="Edit note" aria-hidden="true"></i></li>
+                    <li name="archiveNoteControl"><i class="fa fa-archive" action="archive" data-tooltip="To Archive" aria-hidden="true"></i></li>
+                    <li name="removeNoteControl"><i class="fa fa-trash" action="remove" data-tooltip="Remove note" aria-hidden="true"></i></li>
+                  </ul>
+                </li>  
             </ul>`;
+
+const noteOnEditControls = () => `<ul class="controlButtonsWrap" >
+          <li name="saveNoteControl"><i class="fa fa-floppy-o" action="editSave" data-tooltip="Save note" aria-hidden="true"></i></li>
+          <li name="cancelNoteControl"><i class="fa fa-undo" action="onEditCancel" data-tooltip="Cancel editing" aria-hidden="true"></i></li>
+        </ul>`
+
 
 const noteRowSummaryTemplate = (row = {}) => `<ul class="noteRow"> 
                 <li class="noteIcon">
@@ -52,14 +65,14 @@ const noteRowSummaryTemplate = (row = {}) => `<ul class="noteRow">
 
 const categoryIconEl = (classes = []) => `<i class="${classes.join(' ')}" aria-hidden="true"></i>`;
 
-const categoriesSelector = (noteCategories = [], defaultValue = '') =>  
-            `<select id="categories" name="category" action="popUpChangeCategory">
+const categoriesSelector = (noteCategories = [], defaultValue = '', action = 'popUpChangeCategory') =>  
+            `<select id="categories" name="category" action="${action}">
                 ${defaultValue ? '' : '<option selected disabled hidden>Choose cat</option>'}
                 ${noteCategories.map((cat) => `<option value='${cat}' ${cat === defaultValue ? 'selected' : ''}>${cat}</option>`)}
             </select>`;
 
 const addNotePopUp = (noteCategories = []) => `<div class="noteAddPopUp">
-                    <button class="closeButton" action="closePopUp">X</button>
+                    <!--close button at this place injected into view-->
                     <form action="addNewNote">
                       <fieldset>
                           <span id="popUpAddIcon"></span>
@@ -75,5 +88,5 @@ const addNotePopUp = (noteCategories = []) => `<div class="noteAddPopUp">
 export {
   noteRowTemplate, noteRowSummaryTemplate, notesTableHeader, categoryIconEl,
   notesSummaryTableHeader, addNotePopUp, categoriesSelector, noRecords,
-  createNoteButton
+  createNoteButton, hideNotePopUpButton, noteOnEditControls, icon
 };

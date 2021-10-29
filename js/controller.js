@@ -6,10 +6,11 @@ export class Controller {
         this.view = view
         this.root = document.querySelector(settings.rootElement);
         this.editNoteFlag = false
+        this.createNotePopUpFlag = false
     }
 
     buildIndex = () => {
-        const nodes = []
+      const nodes = []
       const notesRecords = this.model.notesTable()
       const summaryRecords = this.model.summaryTable()
 
@@ -17,7 +18,8 @@ export class Controller {
                             {"type": "click",  "listener": this._onClick},
                             {"type": "change", "listener": this._onSelect}]
       const popUpSelectors = ["popupHidden"]
-      const notesTableEvents = [{"type": "click", "listener": this._onClick}]
+      const notesTableEvents = [{"type": "change", "listener": this._onSelect}, 
+                                {"type": "click", "listener": this._onClick}]
       const createNoteButtonEvents = [{"type": "click", "listener": this._onClick}]
       
       nodes.push(this.view.createNoteAddPopUp(settings.categories, popUpSelectors, popUpEvents))
@@ -36,7 +38,7 @@ export class Controller {
 
       const action = event.target?.attributes?.action?.nodeValue ?? ""
         //if(!action) throw new Error (`Controller: Dom Event Action is empty`)
-      const noteId = event.target?.parentNode?.parentNode?.attributes?.rowid?.nodeValue ?? "" ;
+      const noteId = event.target?.parentNode?.parentNode?.parentNode?.parentNode?.attributes?.rowid?.nodeValue ?? "" ;
 
       return {action, noteId, event}
     }
@@ -49,8 +51,10 @@ export class Controller {
         const notesActions = {'archiveActiveToggle': this.showActiveArchiveNotesToggle ,
                               'removeAll': this.removeAllNotes}
 
-        const noteActions = {'remove': this.removeNote, 'onEdit': this.onEditNote, 
-                             'editSave': this.editSaveNote,
+        const noteActions = {'remove': this.removeNote, 
+                             'onEdit': this.onEditNote, 
+                             'onEditCancel': this.onEditNoteCancel,
+                             'editSave': this.editSaveNote, 
                              'archive': this.archiveNoteToggle}
 
         const popupActions = { 
@@ -60,11 +64,21 @@ export class Controller {
         const clickActions = {...noteActions, ...notesActions, ...popupActions}      
 
         if(Object.keys(clickActions).includes(action)){
-          
-            if(this.editNoteFlag === false || action === "editSave"){
-                clickActions[action](event, noteId);
+            //this.editNoteFlag + (shopPopUp || notesAction || remove || archive) editSave| oneditcancel
+            //this.createNotePopUpFlag + closePoUp
+            //
+            if((this.createNotePopUpFlag === true && action === 'closePopUp')//block all event in popup background
+               || (this.editNoteFlag === true && ['editSave','onEditCancel'].includes(action))
+               || (this.editNoteFlag === false && this.createNotePopUpFlag === false)){
+
+
+           /* if((this.createNotePopUpFlag ===  && action === 'closePopUp')//block all event in popup background
+               || (this.editNoteFlag === false 
+                   || ['editSave','onEditCancel'].includes(action))){//allow all or only (save|close) note edit
+             */       
+                    clickActions[action](event, noteId);
             }    
-            // console.log(`click Action`, action, noteActions[action])
+            console.log(`click Action`, action, noteActions[action], this.createNotePopUpFlag)
         }
         
         //console.log(`controller click`, ev.target.attributes.action.nodeValue, ev)
@@ -74,6 +88,7 @@ export class Controller {
        
         const {action, event} = this._onHandler(ev)
         const submitActions = {'addNewNote': this.addNote}
+        console.log(`onsubmit`, action)
 
         if(Object.keys(submitActions).includes(action)){
 
@@ -83,10 +98,11 @@ export class Controller {
 
     _onSelect = (ev = {}) => {
         console.log(`change`, ev)
-      const {action, noteId, event} = this._onHandler(ev)
-
+      const {action, _, event} = this._onHandler(ev)
+      const noteId = event.target?.parentNode?.parentNode?.attributes?.rowid?.nodeValue ?? "" ;
+      
       const selectActions = {'popUpChangeCategory': this.changeCategoryIconOnAdd,
-                             'noteEdit': this.changeCategoryIconOnEdit}     
+                             'noteEditChangeCategory': this.changeCategoryIconOnEdit}     
 
         if(Object.keys(selectActions).includes(action)){
           
@@ -121,37 +137,78 @@ export class Controller {
     addNote = (event) => {
 
         const newNote = {'name': '', 'category': '', 'content': ''}//event... | name, category, content
+        const formNode = event.target
 
-        Array.from(event.target).forEach(e => { 
+        Array.from(formNode).forEach(e => { 
             if(e.name && Object.keys(newNote).includes(e.name)){ 
                 newNote[e.name] = e.value   
             }    
         })
-   
+        console.log(`add note controller`)
         const newNotes = this.model.add(newNote)
         const newSummary = this.model.summaryTable()
+
+        formNode.reset()
+        this.hideCreateNotePopUp(event)
         this.view.updateNotesTable(newNotes)               
         this.view.updateSummaryTable(newSummary)  
     }
 
-    onEditNote = (_, noteId) => {
+    onEditNote = (ev = {}, noteId) => {
 
         const note = this.model.getNote(noteId)
-
+      
         if(note.id){ 
-            this.view.editTableRow(node, settings.categories, note.category)
-            this.editNoteFlag = true
-        }               
+          this.editNoteFlag = true
+          this.view.editTableRow(note, settings.categories)
+        }     
     }
+
+    onEditNoteCancel = (ev = {}, noteId) => {
+
+          this.editNoteFlag = false
+          const notes = this.model.notesTable()
+          this.view.updateNotesTable(notes)       
+    }
+    
+    findNode = (ev = {}, match = [], maxDepth = 5) => {
+        let res = {}
+        let leave = ev.target
+        let i = 0
+        while(i < maxDepth){
+            console.log(`findNode`, i, leave, res)
+            if(i != 0) leave = leave['parentNode']
+
+            const vals = match.map(key => leave.attributes[key])
+            console.log(`findNode vals`, vals)
+            if(vals.filter(val => val !== 'undefined').length === match.length){
+               match.forEach((key, idx) => (res[key] = vals[idx]))
+               return res;
+            } 
+            i++
+        }
+        return res
+    } 
 
     editSaveNote = (event, noteId) => {
 
-        const newNote = {}//event | name, category, content
-        const newNotes = this.model.edit(noteId, newNote)
+        const editedNote = this.model.getNote(noteId)//event | name, category, content
+        const rowNode = this.view.getElement(`[rowId="${noteId}"]`)
+        const nameNode = this.view.getElement(`[name="noteName"]`, rowNode)
+        const selectorNode = this.view.getElement(`[name="noteCategory"]`, rowNode)
+        const contentNode = this.view.getElement(`[name="noteContent"]`, rowNode)
+            editedNote.name = nameNode.textContent
+            editedNote.content = contentNode.textContent
+            editedNote.category = selectorNode.children.category.value
+
+        console.log(`save note`, editedNote)
+
+        const newNotes = this.model.edit(noteId, editedNote)
         const newSummary = this.model.summaryTable()
         this.view.updateNotesTable(newNotes)               
         this.view.updateSummaryTable(newSummary) 
-        //this. 
+        
+        this.editNoteFlag = false
     }
 
     archiveNoteToggle = (_, noteId) => {
@@ -168,6 +225,7 @@ export class Controller {
         const selectors = {selectorsRemove: ['popupHidden']} 
         const desc = '.noteAddPopUp'
         this.view.showNoteAddPopUp(desc, selectors)
+        this.createNotePopUpFlag = true
         console.log(`open popup`, ev)
     }
 
@@ -177,18 +235,19 @@ export class Controller {
         const selectors = {selectorsAdd: ['popupHidden']} 
         const desc = '.noteAddPopUp'
         this.view.hideNoteAddPopUp(desc, selectors)
+        this.createNotePopUpFlag = false
         console.log(`close popup`, ev)
     }
 
-    changeCategoryIconOnEdit = (event = {}) => {
-
+    changeCategoryIconOnEdit = (event = {}, noteId) => {
+        //noteId empty
         this._onHandler(event)
         const newNote = {'category': ''}//event... | category
         const {name, value} = event.target;
         newNote[name] = value 
    
-        this.view.changeCategoryIconEditNote(event, newNote.category)
-        console.log(`change icon on Edit`, newNote, event)
+        this.view.changeCategoryIconEditNote(noteId, newNote.category)
+        console.log(`change icon on Edit`, newNote, noteId)
     }
 
     changeCategoryIconOnAdd = (event = {}) => {

@@ -32,36 +32,39 @@ export class Model {
     newNote.archived = false;
 
     if(this.noteSchema.check(newNote) === false) throw new Error("Added note doesn't valid to schema")
-
+    console.log(`add note`)
       const newNotes = [...this.notes, newNote] 
       this._saveRecords(newNotes)
-    return newNotes
+
+    return this.notesTable()
   }
 
-  edit = (noteId = "", newNote = {}) => {
+  edit = (noteId = "", editedNote = {}) => {
     
-    newNote.editedDate = dateHelper.getCurrentDate()
+    editedNote.dateEdited = dateHelper.getCurrentDate()
 
-    if(this.noteSchema.check(newNote) === false) throw new Error("Edited note doesn't valid to schema")
+    if(this.noteSchema.check(editedNote) === false) throw new Error("Edited note doesn't valid to schema")
 
-      const newNotes = this.notes.map(note => noteId === note.id, {...note, ...newNote}) 
+      const newNotes = this.notes.map(note => noteId === note.id ? ({...note, ...editedNote}) 
+                                                                 : note) 
       this._saveRecords(newNotes)
-    return newNotes
+      
+    return this.notesTable()
   }
 
   remove = (noteId) => {
 
     const newNotes = this.notes.filter(note => noteId != note.id) 
-    this._saveRecords(newNotes, )
-    return newNotes
+    this._saveRecords(newNotes)
+
+    return this.notesTable()
   }
 
   removeAll = () => {
 
-    const newNotes = []
-    const showArchivedNotes = false;
-    this._saveRecords(newNotes, showArchivedNotes)
-    return newNotes
+    const newNotes = this.notes.filter(note => note.archived !== this.showArchivedNotes)
+    this._saveRecords(newNotes)
+    return this.notesTable()
   }
   
   noteToArchive = (noteId) => {

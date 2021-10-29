@@ -65,15 +65,22 @@ export class View {
         Array.from(this.getElement(selector).children).forEach(el => this.removeEl(el))
     }
 
-    editTableRow = (rowNode, categories = [], defaultCategory = "") => {
+    editTableRow = (note = {}, categories = []) => {
 
-        //rowNode.name.contentEditable = true
-        //rowNode.content.contentEditable = true
-        //rowNode.selector.innerHTML = templates.categoriesSelector(categories, defaultCategory)
-        //
-        //const options = {"selectorsAdd": ["editableFields"]}
-        //this.editNode(rowNode, options)
-        //change icons control to icon save
+        const rowNode = this.getElement(`[rowId="${note.id}"]`)
+        const nameNode = this.getElement(`[name="noteName"]`, rowNode)
+        const selectorNode = this.getElement(`[name="noteCategory"]`, rowNode)
+        const contentNode = this.getElement(`[name="noteContent"]`, rowNode)
+        const controlsNode = this.getElement(`[name="noteControls"]`, rowNode)
+
+        console.log(`rowNode`, rowNode, nameNode, selectorNode, contentNode)
+
+        const defaultCategory = note.category
+        nameNode.contentEditable = true
+        contentNode.contentEditable = true
+        const actionType = 'noteEditChangeCategory'
+        selectorNode.innerHTML = templates.categoriesSelector(categories, defaultCategory, actionType)
+        controlsNode.innerHTML = templates.noteOnEditControls()
     }
 
     editedRowSave = () => {
@@ -86,13 +93,21 @@ export class View {
     }
 
     createNoteAddPopUp = (categories = [], selectors = [], events = []) => {
+     
         //console.log(`popup`, categories)
         const popUp = templates.addNotePopUp(categories);
-        const popUpNode = this.editNode(popUp, {'selectorsAdd': selectors, 'eventsAdd': events})
+        const popUpNode = this.editNode(popUp, {'selectorsAdd': selectors,
+                                                'eventsAdd': events.filter(e => e.type !== 'click')}, true)
+
+        const closeButtonTemplate = templates.hideNotePopUpButton()
+        const closeButton = this.editNode(closeButtonTemplate, 
+                                          {'eventsAdd': events.filter(e => e.type === 'click')}, true)
+               popUpNode.insertBefore(closeButton, popUpNode.firstChild)
+
         const categoryIcon = templates.categoryIconEl()
         const categoryIconNode = this.editNode(categoryIcon)
         const categoryIconParentNode = this.getElement('#popUpAddIcon', popUpNode)
-                categoryIconParentNode.appendChild(categoryIconNode)
+              categoryIconParentNode.appendChild(categoryIconNode)
         console.log(`popup`, popUpNode, categoryIconNode)
        // this.popUpNode = popUpNode
         return popUpNode;
@@ -109,17 +124,19 @@ export class View {
            popUpIconNode.appendChild(newIconNode)
     }
 
-    changeCategoryIconEditNote = (node, category) => {
-
-        const newIcon = this.iconsMap[category];
-        
-        console.log(`view change`, node, category, newIcon)
+    changeCategoryIconEditNote = (noteId, category) => {
+        //need refactoring
+        const newIconSelector = this.iconsMap[category];
+        const rowNode = this.getElement(`[rowId="${noteId}"]`)
+        const iconNode = this.getElement(`[name="noteIcon"]`, rowNode)
+              iconNode.innerHTML = templates.icon(newIconSelector)
+        console.log(`view change`, noteId, category, newIconSelector, rowNode)
     }
 
     showNoteAddPopUp = (desc, selectors = {}) => {
-        const node = this.getElement(desc)
-        console.log(`show`, node, selectors)
-        this.editNode(node, selectors)
+        const popUpNode = this.getElement(desc)
+        console.log(`show`, popUpNode, selectors)
+        this.editNode(popUpNode, selectors, false)
 
         const createNoteButton = this.getElement('#createNoteButton')
         const addAttribute = {'attributesAdd': [{'name': 'disabled', 'value': true}]}
@@ -128,8 +145,9 @@ export class View {
     }
 
     hideNoteAddPopUp = (desc, selectors = {}) => {
-        const node = this.getElement(desc)
-        this.editNode(node, selectors)
+        const popUpNode = this.getElement(desc)
+        console.log(`hide`, popUpNode, selectors)
+        this.editNode(popUpNode, selectors, false)
 
         const createNoteButton = this.getElement('#createNoteButton')
         const removeAttribute = {'attributesRemove': [{'name': 'disabled', 'value': false}]}
