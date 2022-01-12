@@ -84,12 +84,14 @@ export class View {
     }
 
     createButtonCreateNote = (selectors = [], events = []) => {
+        const container = this.createEl('section', '', '', ['button_container'])
         const button = templates.createNoteButton()
-        return this.editNode(button, {'eventsAdd': events})
+            container.appendChild(this.editNode(button, {'eventsAdd': events}))
+        return container;
     }
 
     createNoteAddPopUp = (categories = [], selectors = [], events = []) => {
-     
+        const section = this.createEl('section', '', '', ['sectionPopUp'])
         const popUp = templates.addNotePopUp(categories);
         const popUpNode = this.editNode(popUp, {'selectorsAdd': selectors,
                                                 'eventsAdd': events.filter(e => e.type !== 'click')}, true)
@@ -103,8 +105,9 @@ export class View {
         const categoryIconNode = this.editNode(categoryIcon)
         const categoryIconParentNode = this.getElement('#popUpAddIcon', popUpNode)
               categoryIconParentNode.appendChild(categoryIconNode)
-       
-        return popUpNode;
+               
+               section.appendChild(popUpNode)
+        return section;
     }
 
     changeCategoryIconAddPopUp = (node, category) => {
@@ -173,7 +176,8 @@ export class View {
     showNoteAddPopUp = (desc, selectors = {}) => {
         const popUpNode = this.getElement(desc)
         this.editNode(popUpNode, selectors, false)
-
+        this.editNode(popUpNode.parentNode, {'selectorsAdd': selectors['parent']}, false)
+        
         const createNoteButton = this.getElement('#createNoteButton')
         const addAttribute = {'attributesAdd': [{'name': 'disabled', 'value': true}]}
         this.editNode(createNoteButton, addAttribute, false)
@@ -182,6 +186,7 @@ export class View {
     hideNoteAddPopUp = (desc, selectors = {}) => {
         const popUpNode = this.getElement(desc)
         this.editNode(popUpNode, selectors, false)
+        this.editNode(popUpNode.parentNode, {'selectorsRemove': selectors['parent']}, false)
 
         const createNoteButton = this.getElement('#createNoteButton')
         const removeAttribute = {'attributesRemove': [{'name': 'disabled', 'value': false}]}

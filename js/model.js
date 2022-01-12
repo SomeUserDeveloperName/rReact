@@ -1,6 +1,6 @@
 import * as noteSchema from "./helpers/schemaHelper.js"
 import * as dateHelper from "./helpers/dateHelper.js"
-import * as mockObj  from "./dataMock.js"
+import { mockObj } from "./dataMock.js"
 export class Model {
 
   constructor(settings = {}){
@@ -89,6 +89,7 @@ export class Model {
   }
 
   notesTable = () => {
+    
     return this.showArchivedNotes ? this.notes.filter(note => note.archived) 
                                   : this.notes.filter(note => !note.archived)
   }

@@ -4,28 +4,28 @@ const noteRowTemplate = (row = {}) => `<ul class="noteRow" rowId="${row.id}">
                     <i class="${row.icon}" aria-hidden="true"></i>
                 </li>
                 <li name="noteName">${row.name}</li>
-                <li>${dateHelper.convertDate(row.dateCreated)}</li>
+                <li name="noteCreated">${dateHelper.convertDate(row.dateCreated)}</li>
                 <li name="noteCategory">${row.category}</li>
                 <li name="noteContent">${row.content}</li>
-                <li>${(() => (row.dateEdited ? `${row.dateCreated}, ${row.dateEdited}`
+                <li name="noteDates">${(() => (row.dateEdited ? `${row.dateCreated}, ${row.dateEdited}`
     : row.dateCreated)
   )(row)}</li>
                 <li name="noteControls">
                   <ul class="controlButtonsWrap" >
-                    <li name="editNoteControl"><i class="fa fa-pencil" action="onEdit" data-tooltip="Edit note" aria-hidden="true"></i></li>
-                    <li name="archiveNoteControl"><i class="fa fa-archive" action="archive" data-tooltip="To Archive" aria-hidden="true"></i></li>
-                    <li name="removeNoteControl"><i class="fa fa-trash" action="remove" data-tooltip="Remove note" aria-hidden="true"></i></li>
+                    <li name="editNoteControl"><i class="fa fa-pencil fa-lg" action="onEdit" data-tooltip="Edit note" aria-hidden="true"></i></li>
+                    <li name="archiveNoteControl"><i class="fa fa-archive fa-lg" action="archive" data-tooltip="To Archive" aria-hidden="true"></i></li>
+                    <li name="removeNoteControl"><i class="fa fa-trash fa-lg" action="remove" data-tooltip="Remove note" aria-hidden="true"></i></li>
                   </ul>
                 </li>  
             </ul>`;
 
 
 const noteRowSummaryTemplate = (row = {}) => `<ul class="noteRow"> 
-                <li class="noteIcon">
+                <li name="summaryIcon" class="noteIcon">
                   <i class="${row.icon}" aria-hidden="true"></i>
                 </li>
-                <li class="noteName">${row.category}</li>
-                <li>${row.active}</li>
-                <li>${row.archived}</li>
+                <li name="summaryCategory" class="noteName">${row.category}</li>
+                <li name="summaryActive">${row.active}</li>
+                <li name="summaryArchived">${row.archived}</li>
             </ul>`;
 export { noteRowTemplate, noteRowSummaryTemplate }            

@@ -14,7 +14,7 @@ const noteOnEditControls = () => `<ul class="controlButtonsWrap" >
 const icon = (selector) => `<i class="${selector}" aria-hidden="true"></i>`
 
 
-const noRecords = () => `<ul class="noteRow">
+const noRecords = () => `<ul class="noteRow noRecords">
                             <li>You haven't any recorded notes</li>
                         </ul>`;
 

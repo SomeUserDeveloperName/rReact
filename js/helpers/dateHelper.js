@@ -21,6 +21,7 @@ const convertDate = (date) => {
   };
 
   const separated = date.split('/');// day,month,year
-  return `${separated[0]} ${monthes[separated[1]]}, ${[separated[2]]}`;
+  
+  return `${monthes[separated[1]] || monthes['0'+separated[1]]} ${separated[0]} , ${[separated[2]]}`;
 };
 export { getCurrentDate, convertDate };
