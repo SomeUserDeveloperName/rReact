@@ -150,9 +150,15 @@ export class Controller {
             }    
         })
 
-        const newNotes = this.model.add(newNote)
-        const newSummary = this.model.summaryTable()
-
+        let newNotes, newSummary
+        try { 
+            newNotes = this.model.add(newNote)
+            newSummary = this.model.summaryTable()
+        } catch (e) { 
+            alert(e)
+            return void(0) 
+        }
+     
         formNode.reset()
         this.hideCreateNotePopUp(event)
         this.view.updateNotesTable(newNotes)               
@@ -214,8 +220,6 @@ export class Controller {
             editedNote.content = contentNode.textContent
             editedNote.category = selectorNode.children.category.value
 
-        console.log(`save note`, editedNote)
-
         const newNotes = this.model.edit(noteId, editedNote)
         const newSummary = this.model.summaryTable()
         this.view.updateNotesTable(newNotes)               
@@ -258,7 +262,6 @@ export class Controller {
         newNote[name] = value 
    
         this.view.changeCategoryIconEditNote(noteId, newNote.category)
-        console.log(`change icon on Edit`, newNote, noteId)
     }
 
     changeCategoryIconOnAdd = (event = {}) => {

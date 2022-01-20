@@ -21,11 +21,12 @@ export class Model {
   add = (newNote = {}) => {
 
     newNote.dateCreated = dateHelper.getCurrentDate()
-    newNote.id = `${newNote.dateCreated}_${ new Date().getTime()}`;
+    newNote.dateEdited = ""
+    newNote.id = Math.floor(new Date().getTime()*Math.random(0,1)).toString();
     newNote.archived = false;
 
     if(this.noteSchema.check(newNote) === false) throw new Error("Added note doesn't valid to schema")
-    console.log(`add note`)
+
       const newNotes = [...this.notes, newNote] 
       this._saveRecords(newNotes)
 

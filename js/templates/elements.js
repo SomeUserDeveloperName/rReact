@@ -7,8 +7,8 @@ const categoriesSelector = (noteCategories = [], defaultValue = '', action = 'po
             </select>`;
 
 const noteOnEditControls = () => `<ul class="controlButtonsWrap" >
-          <li name="saveNoteControl"><i class="fa fa-floppy-o" action="editSave" data-tooltip="Save note" aria-hidden="true"></i></li>
-          <li name="cancelNoteControl"><i class="fa fa-undo" action="onEditCancel" data-tooltip="Cancel editing" aria-hidden="true"></i></li>
+          <li name="saveNoteControl"><i class="fa fa-floppy-o fa-lg" action="editSave" data-tooltip="Save note" aria-hidden="true"></i></li>
+          <li name="cancelNoteControl"><i class="fa fa-undo fa-lg" action="onEditCancel" data-tooltip="Cancel editing" aria-hidden="true"></i></li>
         </ul>`
         
 const icon = (selector) => `<i class="${selector}" aria-hidden="true"></i>`

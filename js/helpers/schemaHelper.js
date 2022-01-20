@@ -1,6 +1,8 @@
 import * as settings from '../settings.js';
 
-const check = () => true;
+const check = (newNote) => (newNote?.name?.length >= 2 
+                         && newNote?.content.length >= 2
+                         && settings.categories.includes(newNote?.category));
 
 const noteRef = {
   id: {

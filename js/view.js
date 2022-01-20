@@ -18,9 +18,9 @@ export class View {
         tableHeader = this.editNode(tableHeader)     
 
         const rowsElArr = this.createRows(rows, tableType)
-        //console.log(`edit Note`, rowsElArr.join(''))
+       
         const tableRows = rowsElArr//this.editNode(rowsElArr.join(''))//.replaceAll(/[ \n]/gm, ""));
-        //console.log(`table rows`, tableRows)
+        
         tableBody.append(...tableRows)
             table.append(tableHeader, tableBody)
         return table        
@@ -69,18 +69,12 @@ export class View {
         const contentNode = this.getElement(`[name="noteContent"]`, rowNode)
         const controlsNode = this.getElement(`[name="noteControls"]`, rowNode)
 
-        console.log(`rowNode`, rowNode, nameNode, selectorNode, contentNode)
-
         const defaultCategory = note.category
         nameNode.contentEditable = true
         contentNode.contentEditable = true
         const actionType = 'noteEditChangeCategory'
         selectorNode.innerHTML = templates.categoriesSelector(categories, defaultCategory, actionType)
         controlsNode.innerHTML = templates.noteOnEditControls()
-    }
-
-    editedRowSave = () => {
-
     }
 
     createButtonCreateNote = (selectors = [], events = []) => {
@@ -127,7 +121,6 @@ export class View {
         const rowNode = this.getElement(`[rowId="${noteId}"]`)
         const iconNode = this.getElement(`[name="noteIcon"]`, rowNode)
               iconNode.innerHTML = templates.icon(newIconSelector)
-        console.log(`view change`, noteId, category, newIconSelector, rowNode)
     }
 
     activeArchiveNotesToggle = (showArchive = false) => {

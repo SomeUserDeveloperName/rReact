@@ -12,14 +12,14 @@ class App {
         this.view = new View(settings) 
         this.controller = new Controller(this.model, this.view, settings)
     }
-    init = () => this.controller.buildIndex() 
+      init = () => this.controller.buildIndex() 
 }
   try {
      if(Object.keys(settings).length === 0) throw new Error("Settings obj are empty, but he can't") 
       new App(settings).init()
 
   } catch (error) {
-      console.log(error)
+      alert(error)
       console.error(`Shit happens:`, error.message)
   }
 
