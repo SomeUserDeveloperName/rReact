@@ -1,0 +1,304 @@
+.sectionPopUp {
+    position: fixed;
+    width: 0%;
+    height: 0%;
+    background-color: gray;
+    opacity: 0.9;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.showPopUpSection {
+    width: 100%;
+    height: 100%;
+}
+
+.popupHidden {
+    display: none;
+}
+
+.noteAddPopUp {
+	position: absolute;
+    background-color: white;
+	width: 90%;
+	height: 55%;
+	top: 20%;
+	left: 5%;
+}
+
+form {
+    height: 75%;
+    padding: 1%;
+}
+fieldset {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 60%;
+}
+
+fieldset * {
+    display: inline-flex;
+}
+
+fieldset input[type="text"], select, textarea {
+    border: 1px solid black;
+}
+
+fieldset textarea {
+    padding: 0px;
+    margin: 0px;
+    height: 1.6em;
+}
+
+
+.notesTable, .summaryTable {
+    color: rgba(0, 0, 0, 0.685);
+    border: 2px ;
+    height: 25%;
+    /*width: 50%;*/
+    border-collapse: collapse;
+}
+[name="headerNoteControls"] {
+    display: flex;
+}
+[name="headerNoteControls"] [name="archiveToggle"]{
+    /* flex-basis: 48%;
+    margin-left: 11%; */
+    flex-basis: 36%;
+    margin-left: 29%;
+}
+
+[name="noteName"], [name="noteContent"] {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.controlButtonsWrap {
+    display: flex;
+    /* justify-content: space-around; */
+    justify-content: right;
+}
+.controlButtonsWrap li{
+    display: inline-block;
+    width: 20%;
+    padding-right: 5%;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.tableHead {
+    background-color: rgb(156, 156, 156);
+    color: white;
+    height: 30px;
+    display: flex;
+    font-weight: 600;
+    align-items: center;
+   /* justify-content: space-between;*/
+}
+
+
+.noteRow {
+    height: 40px;
+    margin: 10px 0px;
+    background-color: rgb(230, 230, 230);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.noteRow:hover{
+    background-color: gray;
+}
+
+[name="noteIcon"] {
+    width: 8%;
+    text-align: center;
+}
+
+[name="noteName"] {
+    width: 15%;
+}
+[name="noteCreated"] {
+    width: 15%;
+}
+[name="noteCategory"] {
+    width: 15%;
+}
+[name="noteContent"] {
+    width: 23%;
+}
+[name="noteDates"] {
+    width: 14%;
+}
+[name="noteControls"] {
+    width: 10%;
+}
+
+[name="notesTHeadName"]{
+    margin-left:8%;
+    width:15%;
+}
+[name="notesTHeadCreated"]{
+    width: 15%;
+}
+[name="notesTHeadCategory"] {
+    width: 15%;
+}
+[name="notesTHeadContent"] {
+    width: 23%;
+}
+[name="notesTHeadDates"] {
+    width: 17%;
+}
+[name="notesTHeadControls"] {
+    width: 7%;
+}
+
+/*Summary notes Table Header*/
+.summaryTable .tableHead {
+    text-align: center;
+}
+[name="summaryTHeadCategory"] {
+    width: 10%;
+    margin-left:8%;
+    text-align:left;
+}
+[name="summaryTHeadActive"] {
+    width: 10%;
+    margin-left: 32.5%;
+    text-align: left;
+}
+[name="summaryTHeadArchived"] {
+    width: 20%;
+    margin-left: 14.7%;
+    text-align:left;
+}
+
+[name="summaryIcon"] {
+    width: 8%;
+    text-align: center;
+}
+[name="summaryCategory"] {
+    width: 43%;
+}
+[name="summaryActive"] {
+    width: 25%;
+}
+[name="summaryArchived"] {
+    width: 25%;
+}
+.noRecords {
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+[name="noteIcon"] i{
+    padding-top: 5px;
+}
+button {
+    padding: 2px;
+    width: 80px;
+    border-radius: 3px;
+    border: solid 1px black;
+}
+button:hover{
+    background-color: black;
+    color: white;
+    border: solid 1px grey;
+}
+
+.sectionPopUp .closeButton {
+    width: 2.5em;
+    border-radius: 2.5em;
+    height: 2.5em;
+    font-size: 1.1em;
+    /* line-height: 0px; */
+    /* line-break: anywhere; */
+    position: relative;
+    left: 98%;
+    top: -5%;
+}
+
+.popUpControls {
+    width: 30%;
+    margin-left: 35%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.5%;
+}
+
+.popUpControls input[type="reset"]{
+    width: 80px;
+    border-radius: 3px;
+    border: solid 1px black;
+    height: 20px;
+}
+.popUpControls input[type="reset"]:hover{
+    background-color: black;
+    color: white;
+    border: solid 1px grey;
+}
+
+
+
+[data-tooltip] {
+    position: relative; /* Относительное позиционирование */ 
+}
+[data-tooltip]::after {
+    content: attr(data-tooltip); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    width: 150px; /* Ширина подсказки */
+    right: 1.5em; top: 0; /* Положение подсказки */
+    background: #1f1f1f;/*#3989c9;*/ /* Синий цвет фона */
+    color: #fff; /* Цвет текста */
+    padding: 0.5em; /* Поля вокруг текста */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Параметры тени */
+    pointer-events: none; /* Подсказка */
+    opacity: 0; /* Подсказка невидима */
+    transition: 0.5s; /* Время появления подсказки */
+} 
+[data-tooltip]:hover::after {
+    opacity: 1; /* Показываем подсказку */
+    top: 0em; /* Положение подсказки */
+}
+
+[contenteditable] {
+    padding: 0px 2px;
+    background: white;
+    border: 1px solid lightgrey;
+    overflow-x: hidden;
+}
+
+.archiveRecordsShow {
+    background-color: black;
+}
+
+rootapp {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    margin: 2.5% 5%;
+    height: 100%;
+}
+
+.button_container {
+    align-self: flex-end;
+    margin-top: 15px;
+}
+
+.tableBody{
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.summaryTable {
+    margin-top: 50px;
+}
